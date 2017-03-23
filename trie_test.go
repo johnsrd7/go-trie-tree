@@ -1,6 +1,8 @@
 package trie
 
 import (
+	"bufio"
+	"os"
 	"testing"
 	"unicode/utf8"
 )
@@ -14,7 +16,7 @@ func TestNewTrieNode(t *testing.T) {
 			t.Errorf("trieNode.val Error: Expected: %v, Actual: %v", r, tn.val)
 		}
 		if tn.clean != clean {
-			t.Errorf("trieNode.clean Error: Expected: %b, Actual: %b", clean, tn.clean)
+			t.Errorf("trieNode.clean Error: Expected: %v, Actual: %v", clean, tn.clean)
 		}
 		if tn.children == nil {
 			t.Error("trieNode.children Error: Should not be nil.")
@@ -68,7 +70,7 @@ func TestAdd(t *testing.T) {
 		for c := 0; c < len(word); c++ {
 			r := rune(word[c])
 			if _, ok := n.children[r]; !ok {
-				t.Error("Char %v was not added to tree", c)
+				t.Errorf("Char %v was not added to tree", c)
 			}
 
 			n = n.children[r]
@@ -103,6 +105,54 @@ func TestAdd(t *testing.T) {
 	// Now check that the tree is still clean
 	if !checkTrieNodeIsClean(tt.root, tt.specialEndRune) {
 		t.Error("Tree has been left in a dirty state after an invalid word added")
+	}
+}
+
+func TestContains(t *testing.T) {
+	tt := NewTrieTree('*')
+
+	words := []string{"Robert", "Tardis", "testing", "babaloo", "golang"}
+
+	for idx, word := range words {
+		tt.Add(word)
+
+		for jdx, testWord := range words {
+			if jdx <= idx && !tt.Contains(testWord) {
+				t.Errorf("Tree should contain word %s", testWord)
+				return
+			} else if jdx > idx && tt.Contains(testWord) {
+				t.Errorf("Tree should not contain word %s", testWord)
+				return
+			}
+		}
+	}
+
+	fo, err := os.Open("testdata/dict.txt")
+	defer fo.Close()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	scanner := bufio.NewScanner(fo)
+	var dictWords []string
+	for scanner.Scan() {
+		dictWords = append(dictWords, scanner.Text())
+	}
+
+	bigt := NewTrieTree('*')
+	for idx, word := range dictWords {
+		bigt.Add(word)
+
+		for jdx, testWord := range dictWords {
+			if jdx <= idx && !bigt.Contains(testWord) {
+				t.Errorf("Tree should contain word %s", testWord)
+				return
+			} else if jdx > idx && bigt.Contains(testWord) {
+				t.Errorf("Tree should not contain word %s", testWord)
+				return
+			}
+		}
 	}
 }
 
