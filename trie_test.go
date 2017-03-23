@@ -16,7 +16,7 @@ func TestNewTrieNode(t *testing.T) {
 			t.Errorf("trieNode.val Error: Expected: %v, Actual: %v", r, tn.val)
 		}
 		if tn.clean != clean {
-			t.Errorf("trieNode.clean Error: Expected: %b, Actual: %b", clean, tn.clean)
+			t.Errorf("trieNode.clean Error: Expected: %v, Actual: %v", clean, tn.clean)
 		}
 		if tn.children == nil {
 			t.Error("trieNode.children Error: Should not be nil.")
@@ -70,7 +70,7 @@ func TestAdd(t *testing.T) {
 		for c := 0; c < len(word); c++ {
 			r := rune(word[c])
 			if _, ok := n.children[r]; !ok {
-				t.Error("Char %v was not added to tree", c)
+				t.Errorf("Char %v was not added to tree", c)
 			}
 
 			n = n.children[r]
