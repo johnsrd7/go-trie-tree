@@ -102,3 +102,25 @@ func (t Tree) Add(word string) bool {
 
 	return true
 }
+
+// Contains returns true if the given word is contained in the tree.
+func (t Tree) Contains(word string) bool {
+	if len(word) == 0 {
+		return true
+	}
+
+	curNode := t.root
+	for _, c := range word {
+		if _, ok := curNode.children[c]; !ok {
+			return false
+		}
+
+		curNode = curNode.children[c]
+	}
+
+	// If we got here, then we got through the word, so we just
+	// need to check if the specialEndRune is here. If not, then
+	// the word hasn't been added yet.
+	_, ok := curNode.children[t.specialEndRune]
+	return ok
+}
