@@ -156,6 +156,66 @@ func TestContains(t *testing.T) {
 	}
 }
 
+func TestDelete(t *testing.T) {
+	tt := NewTrieTree('*')
+
+	words := []string{"Robert", "Tardis", "testing", "babaloo", "golang"}
+
+	for _, word := range words {
+		tt.Add(word)
+	}
+
+	for idx, word := range words {
+		tt.Delete(word)
+
+		if tt.Contains(word) {
+			t.Errorf("Tree should not contain word %s after Delete.", word)
+			return
+		}
+
+		for jdx := 0; jdx < idx; jdx++ {
+			if tt.Contains(words[jdx]) {
+				t.Errorf("Tree should not contain word %s after Delete of word %s", words[jdx], word)
+				return
+			}
+		}
+	}
+
+	fo, err := os.Open("testdata/dict.txt")
+	defer fo.Close()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	scanner := bufio.NewScanner(fo)
+	var dictWords []string
+	for scanner.Scan() {
+		dictWords = append(dictWords, scanner.Text())
+	}
+
+	bigt := NewTrieTree('*')
+	for _, word := range dictWords {
+		bigt.Add(word)
+	}
+
+	for idx, word := range dictWords {
+		bigt.Delete(word)
+
+		if bigt.Contains(word) {
+			t.Errorf("Tree should not contain word %s after Delete.", word)
+			return
+		}
+
+		for jdx := 0; jdx < idx; jdx++ {
+			if tt.Contains(dictWords[jdx]) {
+				t.Errorf("Tree should not contain word %s after Delete of word %s", dictWords[jdx], word)
+				return
+			}
+		}
+	}
+}
+
 func checkTrieNodeIsClean(tn *trieNode, specialEndRune rune) bool {
 	for cr, ctn := range tn.children {
 		if cr == specialEndRune {

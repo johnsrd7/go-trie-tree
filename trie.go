@@ -124,3 +124,21 @@ func (t Tree) Contains(word string) bool {
 	_, ok := curNode.children[t.specialEndRune]
 	return ok
 }
+
+// Delete removes the given word from the tree.
+func (t Tree) Delete(word string) {
+	if len(word) == 0 {
+		return
+	}
+
+	curNode := t.root
+	for _, c := range word {
+		if _, ok := curNode.children[c]; !ok {
+			break
+		}
+
+		curNode = curNode.children[c]
+	}
+
+	delete(curNode.children, t.specialEndRune)
+}
